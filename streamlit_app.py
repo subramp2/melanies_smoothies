@@ -1,6 +1,5 @@
 # Import python packages
 import streamlit as st
-#from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col
 
 
@@ -11,18 +10,9 @@ st.write(
     """
 )
 
-
 name_on_order = st.text_input("Name on Smoothie")
 st.write("The name on your Smoothie will be", name_on_order)
 
-
-#option = st.selectbox(
-#    "What is your favorite fruit?",
-#    ("Banana", "Strawberries", "Peaches"),
-#)
-#st.write("You favorite fruit is:", option)
-
-#session = get_active_session()
 cnx=st.connection("snowflake")
 session = cnx.session()
 
@@ -34,9 +24,7 @@ ingredients_list = st.multiselect('Choose up to 5 ingredients:'
                                   , max_selections  = 5  )
 
 if ingredients_list:
- #   st.write(ingredients_list)
- #   st.text(ingredients_list)
-    
+
     ingredients_string =''
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen +' '
@@ -46,17 +34,9 @@ if ingredients_list:
     my_insert_stmt = """ insert into smoothies.public.orders(ingredients,NAME_ON_ORDER)
             values ('""" + ingredients_string + """','"""+name_on_order+"""')"""
 
-    #st.write(my_insert_stmt)
     time_to_insert = st.button('Submit Order')
     
     if time_to_insert:
         session.sql(my_insert_stmt).collect()
         st.success('Your Smoothie is ordered!', icon="✅")
-
-    #st.write(my_insert_stmt)
-    time_to_insert = st.button('Submit Order')
     
-    if time_to_insert:
-        session.sql(my_insert_stmt).collect()
-        st.success('Your Smoothie is ordered!', icon="✅")
-

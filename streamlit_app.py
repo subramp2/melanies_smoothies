@@ -40,8 +40,18 @@ if ingredients_list:
         # st.write('The search value for ', fruit_chosen, 'is', search_on, '.')        
         
         st.subheader(fruit_chosen + ' Nutrition Information')
-        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + search_on)
-        fv_df= st.dataframe(data=fruityvice_response.json(), use_container_width= True)
+        try:
+            fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{search_on}")
+            if fruityvice_response.status_code == 200:
+                # Parse JSON response
+                fruityvice_data = fruityvice_response.json()
+                fv_df = pd.DataFrame([fruityvice_data])  # Convert the single JSON object to a DataFrame
+                st.dataframe(fv_df, use_container_width=True)
+            else:
+                st.error(f"Error fetching data for {fruit_chosen}: {fruityvice_response.status_code}")
+                st.write(f"Response: {fruityvice_response.text}")
+        except requests.exceptions.RequestException as e:
+            st.error(f"Failed to fetch data for {fruit_chosen}: {e}")
 
     # st.write(ingredients_string)    
 
